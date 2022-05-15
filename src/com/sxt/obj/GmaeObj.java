@@ -67,4 +67,30 @@ public class GmaeObj {
     public void setFrame(GameWin frame) {
         this.frame = frame;
     }
+    public GmaeObj(){
+
+    }
+
+    public GmaeObj(Image img, int x, int y, int width, int height, double speed, GameWin frame) {
+        this.img = img;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.speed = speed;
+        this.frame = frame;
+    }
+
+    public GmaeObj(Image img, int x, int y, double speed) {
+        this.img = img;
+        this.x = x;
+        this.y = y;
+        this.speed = speed;
+    }
+    public void paintSelf(Graphics gImage){
+        gImage.drawImage(img,x,y,null);
+    }
+    public Rectangle getRec(){
+        return new Rectangle(x,y,width,height);
+    }
 }
