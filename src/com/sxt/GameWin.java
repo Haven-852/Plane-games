@@ -5,24 +5,30 @@ import com.sxt.utils.GameUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class GameWin extends JFrame {
     //游戏状态 0未开始 1游戏中 2暂停 3通关失败 4通关成功
-    static int state=0;
+    public static int state=0;
 
     Image offScreenImage =null;
     int width=600;
     int height=600;
     //游戏的重绘次数
     int count=1;
-
+    //敌机出现数量
+    int enemyCount=0;
+    //游戏得分
+    public static int score=0;
     //背景图对象
     Bgobj bgObj=new Bgobj(GameUtils.bgImg,0,-2000,2);
     //我方飞机对象
-    PlaneObj planeObj=new PlaneObj(GameUtils.planeImg,290,550,20,30,0,this);
-
+    public PlaneObj planeObj=new PlaneObj(GameUtils.planeImg,290,550,20,30,0,this);
+    //敌方boss对象
+    public BossObj bossObj=null;
     public void launch(){
         //设置窗口是否可见
         this.setVisible(true);
@@ -41,6 +47,23 @@ public class GameWin extends JFrame {
                 if(e.getButton()==1 && state==0){
                     state=1;
                     repaint();
+                }
+            }
+        });
+        //暂停
+        this.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode()==32){
+                    switch (state){
+                        case 1:
+                            state=2;
+                            break;
+                        case 2:
+                            state=1;
+                            break;
+                            default:
+                    }
                 }
             }
         });
@@ -69,18 +92,30 @@ public class GameWin extends JFrame {
             gImage.drawImage(GameUtils.bgImg,0,0,null);
             gImage.drawImage(GameUtils.bossImg,220,120,null);
             gImage.drawImage(GameUtils.explodeImg,270,350,null);
-            gImage.setColor(Color.yellow);
-            gImage.setFont(new Font("仿宋",Font.BOLD,40));
-            gImage.drawString("点击开始游戏",180,300);
+            GameUtils.drawWord(gImage,"点击开始游戏",Color.yellow,40,180,300);
+
         }
         if(state==1){
+            GameUtils.gameObjList.addAll(GameUtils.explodeObjList);
             for(int i=0;i<GameUtils.gameObjList.size();i++){
                 GameUtils.gameObjList.get(i).paintSelf(gImage);
             }
-
+            GameUtils.gameObjList.removeAll(GameUtils.removeList);
         }
+        if(state==3){
+            //游戏失败
+            gImage.drawImage(GameUtils.explodeImg,planeObj.getX()-35,planeObj.getY()-50,null);
+            GameUtils.drawWord(gImage,"GAME　OVER",Color.red,50,180,300);
+        }
+        if(state==4){
+            //游戏通关
+            gImage.drawImage(GameUtils.explodeImg,bossObj.getX()+30,bossObj.getY(),null);
+            GameUtils.drawWord(gImage,"游戏通关",Color.green,50,190,300);
+        }
+        GameUtils.drawWord(gImage,score+"分",Color.green,40,30,100);
         g.drawImage(offScreenImage,0,0,null);
         count++;
+        System.out.println(GameUtils.gameObjList.size());
     }
     void createObj(){
         //我方子弹
@@ -89,9 +124,19 @@ public class GameWin extends JFrame {
             GameUtils.gameObjList.add(GameUtils.shellObjList.get(GameUtils.shellObjList.size()-1));
         }
         if(count%15==0){
-            GameUtils.enemyObjList.add(new EnemyObj(GameUtils.enemyImg,(int)((Math.random()*12)*50),0,49,36,5,this);
+            //敌机的生成
+            GameUtils.enemyObjList.add(new EnemyObj(GameUtils.enemyImg,(int)((Math.random()*12)*50),0,49,36,5,this));
             GameUtils.gameObjList.add(GameUtils.enemyObjList.get(GameUtils.enemyObjList.size()-1));
-            
+            enemyCount++;
+        }
+        //boss子弹
+        if(count%15==0&&bossObj!=null){
+            GameUtils.bulletObjList.add(new BulletObj(GameUtils.bulletImg,bossObj.getX()+76,bossObj.getY()+85,15,25,5,this));
+            GameUtils.gameObjList.add(GameUtils.bulletObjList.get(GameUtils.bulletObjList.size()-1));
+        }
+        if(enemyCount>100&&bossObj==null){
+            bossObj=new BossObj(GameUtils.bossImg,250,35,155,100,5,this);
+            GameUtils.gameObjList.add(bossObj);
         }
     }
     public static void main(String args[]){

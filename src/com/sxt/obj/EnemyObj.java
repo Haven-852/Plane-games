@@ -1,6 +1,7 @@
 package com.sxt.obj;
 
 import com.sxt.GameWin;
+import com.sxt.utils.GameUtils;
 
 import java.awt.*;
 
@@ -21,6 +22,29 @@ public class EnemyObj extends GmaeObj {
     @Override
     public void paintSelf(Graphics gImage) {
         super.paintSelf(gImage);
+        y+=speed;
+        for(ShellObj shellObj: GameUtils.shellObjList){
+            if(this.getRec().intersects(shellObj.getRec())){
+                ExplodeObj explodeObj=new ExplodeObj(x,y);
+                GameUtils.explodeObjList.add(explodeObj);
+                GameUtils.removeList.add(explodeObj);
+                shellObj.setX(-100);
+                shellObj.setY(100);
+                this.x=-200;
+                this.y=200;
+                GameUtils.removeList.add(shellObj);
+                GameUtils.removeList.add(this);
+                GameWin.score++;
+            }
+        }
+        if(y>600){
+            this.x=-200;
+            this.y=200;
+            GameUtils.removeList.add(this);
+        }
+        if(this.getRec().intersects(this.frame.planeObj.getRec())){
+            GameWin.state=3;
+        }
     }
 
     @Override

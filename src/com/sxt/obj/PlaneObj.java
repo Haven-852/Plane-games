@@ -29,7 +29,11 @@ public class PlaneObj extends GmaeObj{
 
     @Override
     public void paintSelf(Graphics gImage) {
+
         super.paintSelf(gImage);
+        if(this.frame.bossObj!=null&&this.getRec().intersects(this.frame.bossObj.getRec())){
+            GameWin.state=3;
+        }
     }
 
     @Override

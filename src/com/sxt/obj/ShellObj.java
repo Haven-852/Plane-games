@@ -23,6 +23,11 @@ public class ShellObj extends GmaeObj {
     public void paintSelf(Graphics gImage) {
         super.paintSelf(gImage);
         y-=speed;
+        if(y<0){
+            this.x=-100;
+            this.y=100;
+            GameUtils.removeList.add(this);
+        }
     }
 
     @Override

@@ -87,10 +87,17 @@ public class GmaeObj {
         this.y = y;
         this.speed = speed;
     }
+
+    public GmaeObj(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public void paintSelf(Graphics gImage){
         gImage.drawImage(img,x,y,null);
     }
     public Rectangle getRec(){
         return new Rectangle(x,y,width,height);
     }
+
 }
